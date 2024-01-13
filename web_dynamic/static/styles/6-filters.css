@@ -111,3 +111,12 @@ button:hover {
 .locations:hover .popover {
     visibility: visible;
 }
+
+.in-line {
+    display: block;
+}
+
+.locations .popover input {
+    display: inline-block;
+    margin-left: 10px;
+}
