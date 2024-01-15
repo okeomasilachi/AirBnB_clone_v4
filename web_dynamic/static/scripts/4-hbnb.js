@@ -1,26 +1,28 @@
 
 $(() => {
   const amenitiesSelection = {};
+  const amenList = [];
 
   $('.amenities .popover li input').on('change', (event) => {
-      const { id, name } = event.target.dataset;
-      event.target.checked ? amenitiesSelection[name] = id : delete amenitiesSelection[name];
-      $('.amenities h4').text(Object.keys(amenitiesSelection).sort().join(', '));
+    const { id, name } = event.target.dataset;
+    event.target.checked ? amenitiesSelection[name] = id : delete amenitiesSelection[name];
+    event.target.checked ? amenList.push(id) : amenList.pop(id);
+    $('.amenities h4').text(Object.keys(amenitiesSelection).sort().join(', '));
   });
 
   $.ajax({
-      url: 'http://0.0.0.0:5001/api/v1/status',
-      type: 'GET',
-      success: (data) => {
+    url: 'http://0.0.0.0:5001/api/v1/status',
+    type: 'GET',
+    success: (data) => {
       const apiStatusElement = $('#api_status');
 
       if (data.status === 'OK') {
-          apiStatusElement.addClass('available');
-          apiStatusElement.removeAttr('id');
+        apiStatusElement.addClass('available');
+        apiStatusElement.removeAttr('id');
       } else {
-          apiStatusElement.removeClass('available');
+        apiStatusElement.removeClass('available');
       }
-      }
+    }
   });
 
   function renderPlace (data) {
@@ -55,13 +57,24 @@ $(() => {
   }
 
   $.ajax({
+    url: 'http://0.0.0.0:5001/api/v1/places_search/',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({}),
+    success: (data) => {
+        renderPlace(data);
+    }
+  });
+
+  $('button[type=button]').on('click', (event) => {
+    $.ajax({
       url: 'http://0.0.0.0:5001/api/v1/places_search/',
       type: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({}),
+      data: JSON.stringify({ amenities: amenList }),
       success: (data) => {
         renderPlace(data);
       }
+    });
   });
 });
-
